@@ -1,0 +1,13 @@
+{
+    "body": {
+      "name": "Graphic T-Shirt: Mountain Design",
+      "description": "A beautiful t-shirt with mountain scenery",
+      "base_price": 19.99,
+      "category": "T-Shirts",
+      "color": "Blue",
+      "size": "M",
+      "inventory_count": 100,
+      "image_url": "https://example.com/images/mountain-tshirt-blue-m.jpg",
+      "tags": ["mountains", "nature", "outdoor"]
+    }
+  }

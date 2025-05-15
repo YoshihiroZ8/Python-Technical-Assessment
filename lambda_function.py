@@ -1,6 +1,7 @@
 import json
 import logging
 from products import ProductManager
+from decimal import Decimal
 
 # Configure logging
 logger = logging.getLogger()
@@ -12,30 +13,72 @@ def lambda_handler(event, context):
     
     try:
         # Initialize the product manager
-        product_manager = ProductManager()
+        product_manager = ProductManager(endpoint_url=None)
         
-        # Extract product data from the event
-        body = event.get('body')
+        # Extract and validate body
+        if not event:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({
+                    'success': False,
+                    'error': 'No event data provided'
+                })
+            }
+            
+        body = event.get('body', {})
+        # Handle string body (from API Gateway)
         if isinstance(body, str):
-            body = json.loads(body)
-        
-        # Extract required parameters
-        required_params = ['name', 'description', 'base_price', 'category', 'color', 'size', 'inventory_count']
-        for param in required_params:
-            if param not in body:
+            try:
+                body = json.loads(body)
+            except json.JSONDecodeError as e:
                 return {
                     'statusCode': 400,
                     'body': json.dumps({
                         'success': False,
-                        'error': f'Missing required parameter: {param}'
+                        'error': f'Invalid JSON in request body: {str(e)}'
                     })
                 }
+        
+        # Validate body is a dictionary
+        if not isinstance(body, dict):
+            return {
+                'statusCode': 400,
+                'body': json.dumps({
+                    'success': False,
+                    'error': 'Request body must be a JSON object'
+                })
+            }
+        
+        # Extract required parameters
+        required_params = ['name', 'description', 'base_price', 'category', 'color', 'size', 'inventory_count']
+        missing_params = [param for param in required_params if param not in body]
+        
+        if missing_params:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({
+                    'success': False,
+                    'error': f'Missing required parameters: {", ".join(missing_params)}'
+                })
+            }
+        
+        # Convert float price to Decimal for DynamoDB compatibility
+        try:
+            base_price = Decimal(str(body['base_price']))
+        except (ValueError, TypeError, decimal.InvalidOperation) as e:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({
+                    'success': False,
+                    'error': f'Invalid base_price value: {str(e)}'
+                })
+            }
         
         # Call the create_product method
         result = product_manager.create_product(
             name=body['name'],
             description=body['description'],
-            base_price=float(body['base_price']),
+            base_price=base_price,  # Now using Decimal type
             category=body['category'],
             color=body['color'],
             size=body['size'],
