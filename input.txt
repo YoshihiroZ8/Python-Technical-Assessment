@@ -1,0 +1,3 @@
+Hello, world!
+It has multitple lines.
+We will count the words in this file.
