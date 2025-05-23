@@ -4,9 +4,12 @@ from datetime import datetime
 import json
 
 class ProductManager:
-    def __init__(self, table_name='products', region='us-east-1'):
+    def __init__(self, table_name='products', region='us-east-1', endpoint_url="http://localhost:8000"):
         """Initialize the ProductManager with the DynamoDB table name."""
-        self.dynamodb = boto3.resource('dynamodb', region_name=region)
+        if endpoint_url:
+            self.dynamodb = boto3.resource('dynamodb', region_name=region, endpoint_url=endpoint_url)
+        else:
+            self.dynamodb = boto3.resource('dynamodb', region_name=region)
         self.table = self.dynamodb.Table(table_name)
     
     def create_product(self, name, description, base_price, category, color, size, 
