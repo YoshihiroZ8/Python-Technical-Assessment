@@ -18,3 +18,15 @@ array_b = np.array([1, 2, 3])
 #addition 
 sum_array = array_a + array_b
 print(f"Array Addition (sum): {sum_array}")
+
+#multiplication
+product_array = array_a * array_b
+print(f"Array Multiplication (product): {product_array}")
+
+#scalar multiplication
+scaled_array = array_a * 2
+print(f"Scalar Multiplication ({array_a} * 2): {scaled_array}")
+
+#Using NumPy functions
+print(f"Sum of array_a: {np.sum(array_a)}")
+print(f"Mean of array_a: {np.mean(array_a)}")

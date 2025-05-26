@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Flask App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Search Posts</h2>
+        
+        <form method="GET" class="mb-4">
+            <div class="input-group">
+                <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Search posts...">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+        
+        {% if query %}
+            <h4>Search Results for "{{ query }}"</h4>
+            {% if results %}
+                {% for post in results %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.content[:100] }}...</p>
+                            <small class="text-muted">{{ post.date|datetime }}</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No results found for "{{ query }}".</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
